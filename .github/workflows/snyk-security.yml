@@ -25,7 +25,7 @@ jobs:
         run: npm install
 
       - name: Run Snyk Code Test
-        uses: snyk/actions/node@v4
+        uses: snyk/actions/node@v3
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
