@@ -1,0 +1,33 @@
+name: Snyk Code Scan
+
+on:
+  push:
+    branches:
+      - master  # Cambia a la rama principal de tu proyecto si es distinta
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  snyk-code-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Cambia a la versión de Node.js que usa tu proyecto
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Snyk Code Test
+        uses: snyk/actions/node@v4
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: code test
+        continue-on-error: false  # Detener el PR si se encuentran vulnerabilidades en el código
