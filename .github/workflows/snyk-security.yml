@@ -1,4 +1,4 @@
-name: Snyk Code Scan
+name: Snyk Code Scan with Blocking
 
 on:
   push:
@@ -30,4 +30,8 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: code test
-        continue-on-error: false  # Detener el PR si se encuentran vulnerabilidades en el código
+        continue-on-error: false  # Se asegura de que el pipeline falle si se detecta una vulnerabilidad
+
+      - name: Fail if vulnerabilities are found
+        if: failure()
+        run: exit 1
