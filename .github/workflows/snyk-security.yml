@@ -1,0 +1,42 @@
+name: Snyk Code Scan with Blocking
+
+on:
+  push:
+    branches:
+      - main  
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  snyk-code-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Cambia a la versión de Node.js que usa tu proyecto
+
+      - name: Install dependencies
+        run: npm install
+
+      # Instala el CLI de Snyk manualmente
+      - name: Install Snyk CLI
+        run: |
+          npm install -g snyk
+
+      # Ejecuta Snyk Code Test
+      - name: Run Snyk Code Test
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk code test
+        continue-on-error: false  # Bloquea si hay vulnerabilidades
+
+      # Falla el pipeline si se encuentran vulnerabilidades
+      - name: Fail if vulnerabilities are found
+        if: failure()
+        run: exit 1
