@@ -3,7 +3,7 @@ name: Snyk Code Scan with Blocking
 on:
   push:
     branches:
-      - master  # Cambia a la rama principal de tu proyecto si es distinta
+      - main  
   pull_request:
     branches:
       - main
@@ -24,14 +24,19 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      # Instala el CLI de Snyk manualmente
+      - name: Install Snyk CLI
+        run: |
+          npm install -g snyk
+
+      # Ejecuta Snyk Code Test
       - name: Run Snyk Code Test
-        uses: snyk/actions/node@v3
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: code test
-        continue-on-error: false  # Se asegura de que el pipeline falle si se detecta una vulnerabilidad
+        run: snyk code test
+        continue-on-error: false  # Bloquea si hay vulnerabilidades
 
+      # Falla el pipeline si se encuentran vulnerabilidades
       - name: Fail if vulnerabilities are found
         if: failure()
         run: exit 1
